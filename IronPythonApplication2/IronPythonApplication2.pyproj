@@ -3,15 +3,18 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>deed0f7d-38d1-49b4-a1e7-2693a1a0ef28</ProjectGuid>
+    <ProjectGuid>51b7073c-29cc-4f70-b471-b26c7efb5f7d</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>AutoPlay.py</StartupFile>
+    <StartupFile>IronPythonApplication2.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
+    <InterpreterId>{80659ab7-4d53-4e0c-8588-a766116cbd46}</InterpreterId>
+    <LaunchProvider>IronPython (.NET) launcher</LaunchProvider>
+    <InterpreterVersion>2.7</InterpreterVersion>
     <OutputPath>.</OutputPath>
-    <Name>AutoPlay</Name>
-    <RootNamespace>AutoPlay</RootNamespace>
+    <Name>IronPythonApplication2</Name>
+    <RootNamespace>IronPythonApplication2</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -22,10 +25,10 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AutoPlay.py" />
-    <Compile Include="module1.py">
-      <SubType>Code</SubType>
-    </Compile>
+    <None Include="IronPythonApplication2.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <InterpreterReference Include="{80659ab7-4d53-4e0c-8588-a766116cbd46}\2.7" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
