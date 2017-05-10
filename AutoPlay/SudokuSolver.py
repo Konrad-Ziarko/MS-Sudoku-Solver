@@ -16,9 +16,8 @@ class COORD(Structure):
     pass
  
 COORD._fields_ = [("X", c_short), ("Y", c_short)]
-
+debug = False
 isRunning = True
-
 
 def printColoredSudoku(before, testData):
     for i in range (0,9):
@@ -36,12 +35,16 @@ def printColoredSudoku(before, testData):
                 print()
                 print("--"*6, end="")
         print ("")
+
+
 def print_at(r, c, s):
     h = windll.kernel32.GetStdHandle(STD_OUTPUT_HANDLE)
     windll.kernel32.SetConsoleCursorPosition(h, COORD(c, r))
  
     c = s.encode("windows-1252")
     windll.kernel32.WriteConsoleA(h, c_char_p(c), len(c), None, None)
+
+
 class SingleCell:
     def __init__(self, x, y, houseNumber, row, col, house, missingInRow, missingInColumn, missingInHouse):
         self.me = 0
@@ -97,6 +100,8 @@ class SingleCell:
                     self.missingInColumn.remove(removeValue2)
                 except ValueError:
                     pass
+
+
 class SudokuGrid:
     def __init__(self, grid):
         self.grid = grid
@@ -156,7 +161,8 @@ class SudokuGrid:
             breakLoop = False
             for i in range(0, 20):
                 if breakLoop:
-                    print("simple", i)
+                    if debug:
+                        print("simple", i)
                     break
                 breakLoop = True
                 for obj in self.cells:
@@ -169,7 +175,8 @@ class SudokuGrid:
             breakLoop = False
             for i in range(0, 20):
                 if breakLoop:
-                    print("missing", i)
+                    if debug:
+                        print("missing", i)
                     break
                 breakLoop = True
                 for obj in self.cells:
@@ -186,7 +193,7 @@ class SudokuGrid:
                             obj2.potencialNumbers = list(set(obj2.missingInHouse).intersection(set(obj2.missingInColumn).intersection(obj2.missingInRow)))
                             obj.potencialNumbers = list(set(obj.potencialNumbers).difference(obj2.potencialNumbers))
                             if len(obj.potencialNumbers) == 0:
-                                        break
+                                break
                     if len(obj.potencialNumbers)==1:
                         obj.potencialNumbers = list(set(obj.potencialNumbers).intersection(set(obj.missingInHouse).intersection(set(obj.missingInColumn).intersection(obj.missingInRow))))
                         if len(obj.potencialNumbers)==1:
@@ -203,7 +210,8 @@ class SudokuGrid:
                 if not breakNextLoop:
                     break
 
-        print("loops", loops)
+        if debug:
+            print("loops", loops)
         for i in range (0,9):
             test = set(self.grid[i, :])
             if len(test) != 9:
@@ -297,91 +305,101 @@ class SudokuGrid:
         return True;
             
 
-testData5 = np.array([[1,4,0,2,0,8,5,0,7],[9,0,8,0,0,0,0,0,0],[0,5,6,1,0,3,9,2,8],[3,6,1,0,5,4,2,8,0],[8,7,0,0,2,0,0,5,0],[5,9,2,0,0,0,0,0,0],[0,3,0,9,0,2,7,0,4],[2,8,0,0,3,1,6,9,0],[4,1,0,0,6,7,8,0,2]])
 
-testData4 = np.array([[0,0,0,5,0,0,0,0,0],[7,5,4,3,6,1,2,0,0],[3,0,0,0,0,0,0,7,6],[8,0,9,4,1,0,6,0,3],[6,3,0,7,0,9,1,0,0],[0,4,0,0,8,0,9,5,0],[5,1,0,9,0,8,0,0,2],[0,0,0,0,0,0,0,0,0],[2,9,0,0,4,7,8,6,0]])
+if __name__ == '__main__':
+    testData5 = np.array([[1,4,0,2,0,8,5,0,7],[9,0,8,0,0,0,0,0,0],[0,5,6,1,0,3,9,2,8],[3,6,1,0,5,4,2,8,0],[8,7,0,0,2,0,0,5,0],[5,9,2,0,0,0,0,0,0],[0,3,0,9,0,2,7,0,4],[2,8,0,0,3,1,6,9,0],[4,1,0,0,6,7,8,0,2]])
 
-testData3 = np.array([[7,0,0,8,4,0,9,0,0],[0,0,1,0,0,0,0,0,0],[9,3,0,0,0,0,8,6,4],[0,0,0,0,7,0,3,0,8],[0,0,6,9,1,0,4,7,0],[0,8,0,0,3,0,0,0,6],[0,5,0,1,0,0,0,0,9],[4,0,9,0,0,3,0,0,1],[0,0,0,0,0,6,0,0,7]])
+    testData4 = np.array([[0,0,0,5,0,0,0,0,0],[7,5,4,3,6,1,2,0,0],[3,0,0,0,0,0,0,7,6],[8,0,9,4,1,0,6,0,3],[6,3,0,7,0,9,1,0,0],[0,4,0,0,8,0,9,5,0],[5,1,0,9,0,8,0,0,2],[0,0,0,0,0,0,0,0,0],[2,9,0,0,4,7,8,6,0]])
 
-testData2 = np.array([[5,0,0,0,0,0,0,0,1],[2,6,0,0,0,0,0,0,3],[0,0,0,0,0,0,9,0,0],[0,4,0,5,0,0,0,7,0],[7,1,0,0,0,4,0,0,0],[6,2,0,0,1,9,0,5,4],[0,7,4,0,9,5,0,0,2],[0,0,0,8,0,0,0,0,7],[0,0,0,0,0,2,3,0,8]])
+    testData3 = np.array([[7,0,0,8,4,0,9,0,0],[0,0,1,0,0,0,0,0,0],[9,3,0,0,0,0,8,6,4],[0,0,0,0,7,0,3,0,8],[0,0,6,9,1,0,4,7,0],[0,8,0,0,3,0,0,0,6],[0,5,0,1,0,0,0,0,9],[4,0,9,0,0,3,0,0,1],[0,0,0,0,0,6,0,0,7]])
 
-testData = np.array([[9,0,0,0,0,0,0,0,1],[0,5,0,0,7,0,6,0,0],[1,0,0,0,0,0,7,0,5],[0,0,4,7,2,0,0,0,0],[0,0,0,5,4,6,1,3,0],[6,2,0,9,0,8,0,0,0],[0,7,0,3,0,0,2,0,4],[2,1,0,6,0,0,0,7,0],[0,0,6,0,0,0,5,1,3]])
+    testData2 = np.array([[5,0,0,0,0,0,0,0,1],[2,6,0,0,0,0,0,0,3],[0,0,0,0,0,0,9,0,0],[0,4,0,5,0,0,0,7,0],[7,1,0,0,0,4,0,0,0],[6,2,0,0,1,9,0,5,4],[0,7,4,0,9,5,0,0,2],[0,0,0,8,0,0,0,0,7],[0,0,0,0,0,2,3,0,8]])
+
+    #testData = np.array([[9,0,0,0,0,0,0,0,1],[0,5,0,0,7,0,6,0,0],[1,0,0,0,0,0,7,0,5],[0,0,4,7,2,0,0,0,0],[0,0,0,5,4,6,1,3,0],[6,2,0,9,0,8,0,0,0],[0,7,0,3,0,0,2,0,4],[2,1,0,6,0,0,0,7,0],[0,0,6,0,0,0,5,1,3]])
+
+    testData = np.array([[9,0,0,0,0,0,0,0,1],[0,5,0,0,7,0,6,0,0],[1,0,0,0,0,0,7,0,5],[0,0,4,7,2,0,0,0,0],[0,0,0,5,4,6,1,3,0],[6,2,0,9,0,8,0,0,0],[0,7,0,3,0,0,2,0,4],[2,1,0,6,0,0,0,7,0],[0,0,6,0,0,0,5,1,3]])
+    
+
+    fromFile = testData
+    obj = SudokuGrid(fromFile)
 
 
 
-delimiterChar = input('Insert delimiter char and press Enter\n')
-os.system('cls')
-fileName = input('Insert file name\n');
-os.system('cls')
-try:
-    fromFile = np.genfromtxt(fileName, dtype=(int), delimiter=delimiterChar)
-except:
-    sys.exit()
-
-print_at(0,15, "Press any button and hop to next step")
-print_at(1,15, "Press ESC to exit")
-print_at(0,0,"")
-if len(fromFile) != 9:
-    sys.exit()
-for i in range (0,9):
+    """
+    delimiterChar = input('Insert delimiter char and press Enter\n')
+    os.system('cls')
+    fileName = input('Insert file name\n');
+    os.system('cls')
     try:
-        if len(fromFile[i]) != 9:
-            sys.exit()
+        fromFile = np.genfromtxt(fileName, dtype=(int), delimiter=delimiterChar)
     except:
         sys.exit()
 
-for i in range (0,9):
-    for j in range (0,9):
-        if fromFile[i][j] == 0:
-            print(Fore.WHITE, end="")
-        else:
-            print(Fore.GREEN, end="")
-        print(fromFile[i][j], end="")
-        if (j+1) % 3 == 0:
-            print(Fore.MAGENTA, end="")
-            print("|", end="")
-    if (i+1) % 3 == 0:
-            print()
-            print(Fore.MAGENTA, end="")
-            print("--"*6, end="")
-    print ("")
+    print_at(0,15, "Press any button and hop to next step")
+    print_at(1,15, "Press ESC to exit")
+    print_at(0,0,"")
+    if len(fromFile) != 9:
+        sys.exit()
+    for i in range (0,9):
+        try:
+            if len(fromFile[i]) != 9:
+                sys.exit()
+        except:
+            sys.exit()
 
-print(Fore.LIGHTCYAN_EX)
-before = np.array(fromFile)
+    for i in range (0,9):
+        for j in range (0,9):
+            if fromFile[i][j] == 0:
+                print(Fore.WHITE, end="")
+            else:
+                print(Fore.GREEN, end="")
+            print(fromFile[i][j], end="")
+            if (j+1) % 3 == 0:
+                print(Fore.MAGENTA, end="")
+                print("|", end="")
+        if (i+1) % 3 == 0:
+                print()
+                print(Fore.MAGENTA, end="")
+                print("--"*6, end="")
+        print ("")
+
+    print(Fore.LIGHTCYAN_EX)
+    before = np.array(fromFile)
 
 
-obj = SudokuGrid(fromFile)
-class AbortableSleep():
-    def __init__(self):
-        self.isRunning = True
-        self._condition = threading.Condition()
+    obj = SudokuGrid(fromFile)
+    class AbortableSleep():
+        def __init__(self):
+            self.isRunning = True
+            self._condition = threading.Condition()
 
-    def __call__(self, secs):
-        with self._condition:
-            self._aborted = False
-            self._condition.wait(timeout=secs)
-            return not self._aborted
+        def __call__(self, secs):
+            with self._condition:
+                self._aborted = False
+                self._condition.wait(timeout=secs)
+                return not self._aborted
 
-    def abort(self):
-        with self._condition:
-            self._condition.notify()
-            self._aborted = True
+        def abort(self):
+            with self._condition:
+                self._condition.notify()
+                self._aborted = True
 
-abortable_sleep = AbortableSleep()
-th = threading.Thread(target=obj.animatedSolve)
-th.start()
-while True:
-    key = ord(getch())
-    abortable_sleep.abort()
-    if key == 27: #ESC
-        isRunning = False
-        print_at(15,0, "")
-        break
+    
+    abortable_sleep = AbortableSleep()
+    th = threading.Thread(target=obj.animatedSolve)
+    th.start()
+    while True:
+        key = ord(getch())
+        abortable_sleep.abort()
+        if key == 27: #ESC
+            isRunning = False
+            print_at(15,0, "")
+            break
 
-"""
-start_time = time.time()
-print(obj.trySolve())
-print(time.time() - start_time, "\n")
-"""
+    """
+    start_time = time.time()
+    print(obj.trySolve())
+    print(time.time() - start_time, "\n")
+    #"""
 
 
