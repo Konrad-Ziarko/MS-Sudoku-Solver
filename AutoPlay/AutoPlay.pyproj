@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>deed0f7d-38d1-49b4-a1e7-2693a1a0ef28</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>SudokuSolver.py</StartupFile>
+    <StartupFile>ms_sudoku.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
