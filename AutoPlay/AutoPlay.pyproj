@@ -26,6 +26,9 @@
     <Compile Include="module1.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="module2.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="ms_sudoku.py">
       <SubType>Code</SubType>
     </Compile>

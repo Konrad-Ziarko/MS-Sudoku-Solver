@@ -1,10 +1,10 @@
 from SudokuSolver import SudokuGrid
+import numpy as np
 import win32gui
 import win32con
 import win32api
 import os,time
-from PIL import ImageGrab,Image, ImageEnhance, ImageFilter
-import pytesseract
+from PIL import ImageGrab,Image, ImageEnhance, ImageFilter, ImageOps
 
 __window_title__ = 'Microsoft Sudoku' 
 __wnd__ = []
@@ -69,13 +69,28 @@ def k_click(code):#1 = 0x31; 9 = 0x39
 
 win32gui.EnumWindows(enumHandler, None)
 time.sleep(2)
-m_click(__wnd__[0]+500,__wnd__[1]+550)#hard
+#m_click(__wnd__[0]+500,__wnd__[1]+550)#hard
 
 time.sleep(2)#temp #odczekanie na zaladowanie poziomu
 
 #rozpoznanie cyfr na siatce (komorka 51x52; odstepy 3px szerokie, 2px wysokie; co 3 komorki +1px)
 #siatka x179 y127 485x485
 numbers = list()
+
+v_1 = 21807
+v_2 = 22650 #25996
+v_3 = 24888
+v_4 = 24616 #24616
+v_5 = 24616 #24449
+v_6 = 23460 #26099
+v_7 = 22343
+v_8 = 26016
+v_9 = 23970
+v_0 = 3131
+
+v = [3131, 21807, 22650, 24888, 24616, 24616, 23460, 22343,26016, 23970]
+matrix = np.zeros((9, 9))
+
 
 pad = [179, 127]
 x = __wnd__[0]+pad[0]
@@ -92,25 +107,15 @@ for col in range(9):
             pady+=2
             if col > 5:
                 pady +=2
-        numbers.append(screenGrab((x+int(row*53.5)+padx, y+int(col*53)+pady, x+int(row*53.5)+51+padx,  y+int(col*53)+52+pady)))
+        im = ImageOps.grayscale(screenGrab((x+int(row*53.5)+padx, y+int(col*53)+pady, x+int(row*53.5)+51+padx,  y+int(col*53)+52+pady)))
+        a = np.array(im.getcolors())
+        a = a.sum()
+        im.show()
+        #min(myList, key=lambda x:abs(x-myNumber))
+        print(a)
+        input()
 
-
-from pytesser3 import *
-from io import StringIO
-
-
-im = numbers[4]
-#im = im.filter(ImageFilter.MedianFilter())
-#enhancer = ImageEnhance.Contrast(im)
-#im = enhancer.enhance(2)
-#im = im.convert('1')
-im.save('temp2.png')
-
-text = pytesseract.image_to_string(im)
-print(text)
-
-
-matrix = []
+        #numbers.append(screenGrab((x+int(row*53.5)+padx, y+int(col*53)+pady, x+int(row*53.5)+51+padx,  y+int(col*53)+52+pady)))
 
 
 #parsowanie do SudokuGrid
@@ -123,9 +128,12 @@ matrix = []
 
 #ustawienie myszki
 #klik myszy/klawiatury
+"""
 for row in range(9):
     for col in range(9):
         m_click(x+int(col*53.5+25.5), y+int(row*53+26))
         time.sleep(0.2)
-        
+    """
+    
+
 
