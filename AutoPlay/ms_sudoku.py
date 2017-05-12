@@ -5,6 +5,10 @@ import win32con
 import win32api
 import os,time
 from PIL import ImageGrab,Image, ImageEnhance, ImageFilter, ImageOps
+from pytesseract import *
+import pytesseract
+
+tesseract_cmd = 'C:/Program Files (x86)/Tesseract-OCR/tesseract'
 
 __window_title__ = 'Microsoft Sudoku' 
 __wnd__ = []
@@ -75,26 +79,29 @@ time.sleep(2)#temp #odczekanie na zaladowanie poziomu
 
 #rozpoznanie cyfr na siatce (komorka 51x52; odstepy 3px szerokie, 2px wysokie; co 3 komorki +1px)
 #siatka x179 y127 485x485
+
+
 numbers = list()
 
-v_1 = 21807
-v_2 = 22650 #25996
-v_3 = 24888
-v_4 = 24616 #24616
-v_5 = 24616 #24449
-v_6 = 23460 #26099
-v_7 = 22343
-v_8 = 26016
-v_9 = 23970
-v_0 = 3131
+v_1 = np.mean([15583,14519])
+v_2 = np.mean([17260 ,17419 ,16649 ,17473])
+v_3 = np.mean([19211 ,18248 ,20182])
+v_4 = np.mean([15978 ,16824])
+v_5 = np.mean([17158 ,17015])
+v_6 = np.mean([20940 ,20215 ,20013])
+v_7 = np.mean([15934 ,16025 ,15253])
+v_8 = np.mean([20658 ,21204])
+v_9 = np.mean([19272 ,20116])
+v_0 = 1977
 
-v = [3131, 21807, 22650, 24888, 24616, 24616, 23460, 22343,26016, 23970]
+v = [v_0, v_1, v_2, v_3 ,v_4 ,v_5 , v_6 , v_7, v_8 , v_9]
 matrix = np.zeros((9, 9))
-
 
 pad = [179, 127]
 x = __wnd__[0]+pad[0]
 y = __wnd__[1]+pad[1]
+im = screenGrab((x, y, x+500, y+550))
+
 for col in range(9):
     for row in range(9):
         padx = 0
@@ -107,33 +114,48 @@ for col in range(9):
             pady+=2
             if col > 5:
                 pady +=2
-        im = ImageOps.grayscale(screenGrab((x+int(row*53.5)+padx, y+int(col*53)+pady, x+int(row*53.5)+51+padx,  y+int(col*53)+52+pady)))
-        a = np.array(im.getcolors())
-        a = a.sum()
-        im.show()
-        #min(myList, key=lambda x:abs(x-myNumber))
-        print(a)
-        input()
+        im = screenGrab((x+int(row*53.5)+padx+5, y+int(col*53)+pady+5, x+int(row*53.5)+51+padx-5,  y+int(col*53)+52+pady-5))
+        #im.show()
+        string = image_to_string(im, config='-psm 10 digits')
+        try:
+            matrix[col][row] = int(string)
+        except:
+            matrix[col][row] = 0
 
-        #numbers.append(screenGrab((x+int(row*53.5)+padx, y+int(col*53)+pady, x+int(row*53.5)+51+padx,  y+int(col*53)+52+pady)))
 
+print(matrix)
 
 #parsowanie do SudokuGrid
-#grid = SudokuGrid(matrix)
+grid = SudokuGrid(np.array(matrix, copy=True)  )
 #rozwiazanie sudoku
-
-
-
-
+print(grid.trySolve())
+print(grid.grid)
 
 #ustawienie myszki
 #klik myszy/klawiatury
-"""
+
 for row in range(9):
     for col in range(9):
-        m_click(x+int(col*53.5+25.5), y+int(row*53+26))
-        time.sleep(0.2)
-    """
-    
+        if matrix[row][col] == 0:
+            m_click(x+int(col*53.5+25.5), y+int(row*53+26))
+            if grid.grid[row][col] == 1:
+                k_click(49)
+            elif grid.grid[row][col] == 2:
+                k_click(50)
+            elif grid.grid[row][col] == 3:
+                k_click(51)
+            elif grid.grid[row][col] == 4:
+                k_click(52)
+            elif grid.grid[row][col] == 5:
+                k_click(53)
+            elif grid.grid[row][col] == 6:
+                k_click(54)
+            elif grid.grid[row][col] == 7:
+                k_click(55)
+            elif grid.grid[row][col] == 8:
+                k_click(56)
+            elif grid.grid[row][col] == 9:
+                k_click(57)
+            
 
 

@@ -154,7 +154,7 @@ class SudokuGrid:
                                 self.cells.append(SingleCell(i, j, houseNumber, row, column, house, missingInRow, missingInColumn, missingInHouse))
     def trySolve(self):
         breakNextLoop = False
-        for loops in range(0,10):
+        for loops in range(0,90):
             if breakNextLoop:
                 break
             breakNextLoop = True
