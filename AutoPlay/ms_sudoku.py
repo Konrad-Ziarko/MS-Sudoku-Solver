@@ -114,6 +114,7 @@ for col in range(9):
             pady+=2
             if col > 5:
                 pady +=2
+        win32gui.EnumWindows(enumHandler, None)
         im = screenGrab((x+int(row*53.5)+padx+5, y+int(col*53)+pady+5, x+int(row*53.5)+51+padx-5,  y+int(col*53)+52+pady-5))
         #im.show()
         string = image_to_string(im, config='-psm 10 digits')

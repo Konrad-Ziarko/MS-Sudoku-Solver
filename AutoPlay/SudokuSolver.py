@@ -102,6 +102,69 @@ class SingleCell:
                     pass
 
 
+def isViolation(matrix):
+    for row in range(0,9):
+        #no_dupes = [x for n, x in enumerate(matrix[row, :]) if x not in matrix[row, :n]]
+        dupes = [x for n, x in enumerate(matrix[row, :]) if x in matrix[row,:n]]
+        dupes = [x for x in dupes if x != 0]
+        if len(dupes)>0:
+            return True
+    for col in range(0,9):
+        #no_dupes = [x for n, x in enumerate(matrix[:, col]) if x not in matrix[:n, col]]
+        dupes = [x for n, x in enumerate(matrix[:, col]) if x in matrix[:n,col]]
+        dupes = [x for x in dupes if x != 0]
+        if len(dupes)>0:
+            return True
+    for houseX in range(0,3):
+        for houseY in range(0,3):
+            mm = matrix[3*houseX:3*houseX+3, 3*houseY:3*houseY+3]
+            c = mm.flatten()
+            dupes = [x for n, x in enumerate(c) if x in c[:n]]
+            dupes = [x for x in dupes if x != 0]
+            if len(dupes)>0:
+                return True
+    return False
+
+def isSolved(matrix):
+    for i in range (0,9):
+        test = set(matrix[i, :])
+        if len(test) != 9:
+            return False
+    for i in range (0,9):
+        test = set(matrix[:, i])
+        if len(test) != 9:
+            return  False
+    return True
+
+class Found(Exception): pass
+def bruteForce(matrix):
+
+    myMatrix = matrix.copy()
+    nextEmptySpotX = nextEmptySpotY = -1
+    value = 1
+    try:
+        for i in range (0,9):
+            for j in range (0,9):
+                if myMatrix[i, j] == 0:
+                    nextEmptySpotX = i
+                    nextEmptySpotY = j
+                    raise Found
+    except Found:
+        pass
+
+    if nextEmptySpotX == -1 and nextEmptySpotY == -1:
+        return matrix
+
+    while not isSolved(myMatrix) and value < 10:
+        myMatrix[nextEmptySpotX,nextEmptySpotY] = value
+        value = value + 1
+        if not isViolation(myMatrix):
+            myMatrix = bruteForce(myMatrix)
+    if not isSolved(myMatrix) or isViolation(myMatrix):
+        return matrix
+    return myMatrix
+
+
 class SudokuGrid:
     def __init__(self, grid):
         self.grid = grid
@@ -152,6 +215,11 @@ class SudokuGrid:
                                 self.grid[i,j] = missingInHouse[0]
                             else:
                                 self.cells.append(SingleCell(i, j, houseNumber, row, column, house, missingInRow, missingInColumn, missingInHouse))
+    
+
+   
+                              
+                                
     def trySolve(self):
         breakNextLoop = False
         for loops in range(0,90):
@@ -159,7 +227,7 @@ class SudokuGrid:
                 break
             breakNextLoop = True
             breakLoop = False
-            for i in range(0, 20):
+            for i in range(0, 30):
                 if breakLoop:
                     if debug:
                         print("simple", i)
@@ -173,7 +241,7 @@ class SudokuGrid:
                         self.cells.remove(obj)
 
             breakLoop = False
-            for i in range(0, 20):
+            for i in range(0, 30):
                 if breakLoop:
                     if debug:
                         print("missing", i)
@@ -212,97 +280,22 @@ class SudokuGrid:
 
         if debug:
             print("loops", loops)
+        requireBruteForce = False
         for i in range (0,9):
             test = set(self.grid[i, :])
             if len(test) != 9:
-                return False
+                requireBruteForce = True
         for i in range (0,9):
             test = set(self.grid[:, i])
             if len(test) != 9:
-                return False
-        return True;
+                requireBruteForce = True
 
-    def animatedSolve(self):
-        breakNextLoop = False
-        for loops in range(0,10):
-            if breakNextLoop:
-                break
-            if not isRunning:
-                return "Interrupted"
-            breakNextLoop = True
-            breakLoop = False
-            for i in range(0, 20):
-                if breakLoop:
-                    """print("simple", i)"""
-                    break
-                breakLoop = True
-                for obj in self.cells:
-                    obj.clearLists()
-                    if obj.simpleCheck():
-                        breakLoop = False
-                        self.grid[obj.x, obj.y] = obj.me
-                        if abortable_sleep(1):
-                            pass
-                        if not isRunning:
-                            return "Interrupted"
-                        print_at(obj.x+obj.houseNumber[0], obj.y+obj.houseNumber[1], str(obj.me))
-                        self.cells.remove(obj)
-
-            breakLoop = False
-            for i in range(0, 20):
-                if breakLoop:
-                    """print("missing", i)"""
-                    break
-                if not isRunning:
-                    return "Interrupted"
-                breakLoop = True
-                for obj in self.cells:
-                    obj.clearLists()
-                    if obj.simpleCheck():
-                        self.grid[obj.x, obj.y] = obj.me
-                        if abortable_sleep(1):
-                            pass
-                        print_at(obj.x+obj.houseNumber[0], obj.y+obj.houseNumber[1], str(obj.me))
-                        self.cells.remove(obj)
-                        continue
-                    obj.potencialNumbers = list(set(obj.missingInHouse).intersection(set(obj.missingInColumn).intersection(obj.missingInRow)))
-                    for obj2 in self.cells:
-                        if obj2.houseNumber == obj.houseNumber and obj2!=obj:
-                            """obj.potencialNumbers = list(set(obj.potencialNumbers).intersection(set(obj.missingInHouse).intersection(set(obj.missingInColumn).intersection(obj.missingInRow))))"""
-                            obj2.potencialNumbers = list(set(obj2.missingInHouse).intersection(set(obj2.missingInColumn).intersection(obj2.missingInRow)))
-                            obj.potencialNumbers = list(set(obj.potencialNumbers).difference(obj2.potencialNumbers))
-                            if len(obj.potencialNumbers) == 0:
-                                        break
-                    if len(obj.potencialNumbers)==1:
-                        obj.potencialNumbers = list(set(obj.potencialNumbers).intersection(set(obj.missingInHouse).intersection(set(obj.missingInColumn).intersection(obj.missingInRow))))
-                        if len(obj.potencialNumbers)==1:
-                            breakLoop = False
-                            self.grid[obj.x, obj.y] = obj.me = obj.potencialNumbers[0]
-                            if abortable_sleep(1):
-                                pass
-                            print_at(obj.x+obj.houseNumber[0], obj.y+obj.houseNumber[1], str(obj.me))
-                            self.cells.remove(obj)
-            
-            
-            for i in range (0,9):
-                for j in range (0,9):
-                    if self.grid[i,j] == 0:
-                        breakNextLoop=False;
-                        break
-                if not breakNextLoop:
-                    break
-
-        print_at(15,0, "ESC to exit\n")
-        """print("loops", loops)"""
-        for i in range (0,9):
-            test = set(self.grid[i, :])
-            if len(test) != 9:
-                return False
-        for i in range (0,9):
-            test = set(self.grid[:, i])
-            if len(test) != 9:
-                return False
-        return True;
+        if requireBruteForce:
+            self.grid = bruteForce(self.grid)
+        if isSolved(self.grid):
+            return True
+        else:
+            return False
             
 
 
@@ -322,7 +315,7 @@ if __name__ == '__main__':
 
     fromFile = testData
     obj = SudokuGrid(fromFile)
-
+    print(bruteForce(testData))
 
 
     """
