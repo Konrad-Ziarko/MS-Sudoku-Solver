@@ -70,93 +70,92 @@ def k_click(code):#1 = 0x31; 9 = 0x39
     win32api.keybd_event(code,0,win32con.KEYEVENTF_KEYUP,0)
 
 
+if __name__ == '__main__':
+    win32gui.EnumWindows(enumHandler, None)
+    time.sleep(2)
+    #m_click(__wnd__[0]+500,__wnd__[1]+550)#hard
 
-win32gui.EnumWindows(enumHandler, None)
-time.sleep(2)
-#m_click(__wnd__[0]+500,__wnd__[1]+550)#hard
+    time.sleep(2)#temp #odczekanie na zaladowanie poziomu
 
-time.sleep(2)#temp #odczekanie na zaladowanie poziomu
-
-#rozpoznanie cyfr na siatce (komorka 51x52; odstepy 3px szerokie, 2px wysokie; co 3 komorki +1px)
-#siatka x179 y127 485x485
-
-
-numbers = list()
-
-v_1 = np.mean([15583,14519])
-v_2 = np.mean([17260 ,17419 ,16649 ,17473])
-v_3 = np.mean([19211 ,18248 ,20182])
-v_4 = np.mean([15978 ,16824])
-v_5 = np.mean([17158 ,17015])
-v_6 = np.mean([20940 ,20215 ,20013])
-v_7 = np.mean([15934 ,16025 ,15253])
-v_8 = np.mean([20658 ,21204])
-v_9 = np.mean([19272 ,20116])
-v_0 = 1977
-
-v = [v_0, v_1, v_2, v_3 ,v_4 ,v_5 , v_6 , v_7, v_8 , v_9]
-matrix = np.zeros((9, 9))
-
-pad = [179, 127]
-x = __wnd__[0]+pad[0]
-y = __wnd__[1]+pad[1]
-im = screenGrab((x, y, x+500, y+550))
-
-for col in range(9):
-    for row in range(9):
-        padx = 0
-        pady = 0
-        if row > 2:
-            padx += 1
-            if row > 5:
-                padx += 1
-        if col > 2:
-            pady+=2
-            if col > 5:
-                pady +=2
-        win32gui.EnumWindows(enumHandler, None)
-        im = screenGrab((x+int(row*53.5)+padx+5, y+int(col*53)+pady+5, x+int(row*53.5)+51+padx-5,  y+int(col*53)+52+pady-5))
-        #im.show()
-        string = image_to_string(im, config='-psm 10 digits')
-        try:
-            matrix[col][row] = int(string)
-        except:
-            matrix[col][row] = 0
+    #rozpoznanie cyfr na siatce (komorka 51x52; odstepy 3px szerokie, 2px wysokie; co 3 komorki +1px)
+    #siatka x179 y127 485x485
 
 
-print(matrix)
+    numbers = list()
 
-#parsowanie do SudokuGrid
-grid = SudokuGrid(np.array(matrix, copy=True)  )
-#rozwiazanie sudoku
-print(grid.trySolve())
-print(grid.grid)
+    v_1 = np.mean([15583,14519])
+    v_2 = np.mean([17260 ,17419 ,16649 ,17473])
+    v_3 = np.mean([19211 ,18248 ,20182])
+    v_4 = np.mean([15978 ,16824])
+    v_5 = np.mean([17158 ,17015])
+    v_6 = np.mean([20940 ,20215 ,20013])
+    v_7 = np.mean([15934 ,16025 ,15253])
+    v_8 = np.mean([20658 ,21204])
+    v_9 = np.mean([19272 ,20116])
+    v_0 = 1977
 
-#ustawienie myszki
-#klik myszy/klawiatury
+    v = [v_0, v_1, v_2, v_3 ,v_4 ,v_5 , v_6 , v_7, v_8 , v_9]
+    matrix = np.zeros((9, 9))
 
-for row in range(9):
+    pad = [179, 127]
+    x = __wnd__[0]+pad[0]
+    y = __wnd__[1]+pad[1]
+    im = screenGrab((x, y, x+500, y+550))
+
     for col in range(9):
-        if matrix[row][col] == 0:
-            m_click(x+int(col*53.5+25.5), y+int(row*53+26))
-            if grid.grid[row][col] == 1:
-                k_click(49)
-            elif grid.grid[row][col] == 2:
-                k_click(50)
-            elif grid.grid[row][col] == 3:
-                k_click(51)
-            elif grid.grid[row][col] == 4:
-                k_click(52)
-            elif grid.grid[row][col] == 5:
-                k_click(53)
-            elif grid.grid[row][col] == 6:
-                k_click(54)
-            elif grid.grid[row][col] == 7:
-                k_click(55)
-            elif grid.grid[row][col] == 8:
-                k_click(56)
-            elif grid.grid[row][col] == 9:
-                k_click(57)
-            
+        for row in range(9):
+            padx = 0
+            pady = 0
+            if row > 2:
+                padx += 1
+                if row > 5:
+                    padx += 1
+            if col > 2:
+                pady+=2
+                if col > 5:
+                    pady +=2
+            win32gui.EnumWindows(enumHandler, None)
+            im = screenGrab((x+int(row*53.5)+padx+5, y+int(col*53)+pady+5, x+int(row*53.5)+51+padx-5,  y+int(col*53)+52+pady-5))
+            #im.show()
+            string = image_to_string(im, config='-psm 10 digits')
+            try:
+                matrix[col][row] = int(string)
+            except:
+                matrix[col][row] = 0
 
+
+    print(matrix)
+
+    #parsowanie do SudokuGrid
+    grid = SudokuGrid(np.array(matrix, copy=True)  )
+    #rozwiazanie sudoku
+    print(grid.trySolve())
+    print(grid.grid)
+
+    #ustawienie myszki
+    #klik myszy/klawiatury
+
+    for row in range(9):
+        for col in range(9):
+            if matrix[row][col] == 0:
+                m_click(x+int(col*53.5+25.5), y+int(row*53+26))
+                if grid.grid[row][col] == 1:
+                    k_click(49)
+                elif grid.grid[row][col] == 2:
+                    k_click(50)
+                elif grid.grid[row][col] == 3:
+                    k_click(51)
+                elif grid.grid[row][col] == 4:
+                    k_click(52)
+                elif grid.grid[row][col] == 5:
+                    k_click(53)
+                elif grid.grid[row][col] == 6:
+                    k_click(54)
+                elif grid.grid[row][col] == 7:
+                    k_click(55)
+                elif grid.grid[row][col] == 8:
+                    k_click(56)
+                elif grid.grid[row][col] == 9:
+                    k_click(57)
+            
 

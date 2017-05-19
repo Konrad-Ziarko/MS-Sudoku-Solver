@@ -126,13 +126,12 @@ def isViolation(matrix):
     return False
 
 def isSolved(matrix):
+    sumOfValues = 45
     for i in range (0,9):
-        test = set(matrix[i, :])
-        if len(test) != 9:
+        if sum(matrix[i, :]) != 45:
             return False
     for i in range (0,9):
-        test = set(matrix[:, i])
-        if len(test) != 9:
+        if sum(matrix[:, i]) != 45:
             return  False
     return True
 
